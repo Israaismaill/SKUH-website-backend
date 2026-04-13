@@ -138,4 +138,12 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
 }
 
-CORS_ALLOW_ALL_ORIGINS = True  # This lets Angular talk to Django
+CORS_ALLOW_ALL_ORIGINS = True  # This lets Angular talk to Django 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' 
+EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_PORT = 587 
+EMAIL_USE_TLS = True 
+EMAIL_HOST_USER = 'israaismil48@gmail.com' 
+EMAIL_HOST_PASSWORD = 'ksqf vnhh dyzj lqhv' 
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
+FRONTEND_URL = 'http://localhost:4200' 

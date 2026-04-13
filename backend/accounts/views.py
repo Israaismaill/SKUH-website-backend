@@ -6,7 +6,12 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import User, Appointment, Doctor, News
 from .serializers import RegisterSerializer, EmailTokenObtainPairSerializer, NewsSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.conf import settings
 
 
 # --- 1. THE REGISTER VIEW (Required by your urls.py) ---
@@ -14,6 +19,58 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+
+    def perform_create(self, serializer):
+        user = serializer.save()
+        user.is_verified = False
+        user.save()
+
+        # Generate verification token
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        # Build verification link
+        verify_url = f"{settings.FRONTEND_URL}/verify-email?uid={uid}&token={token}"
+
+        # Send email
+        send_mail(
+            subject='Verify your email - SKUH Hospital',
+            message=f'''
+Hello {user.first_name},
+
+Thank you for registering with Souad Kafafi University Hospital.
+
+Please click the link below to verify your email address:
+
+{verify_url}
+
+If you did not register, please ignore this email.
+
+Best regards,
+SKUH Hospital Team
+            ''',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
+@api_view(['GET'])
+def verify_email(request):
+    uid = request.GET.get('uid')
+    token = request.GET.get('token')
+
+    try:
+        user_id = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=user_id)
+    except Exception:
+        return Response({'error': 'Invalid link'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if default_token_generator.check_token(user, token):
+        user.is_verified = True
+        user.save()
+        return Response({'message': 'Email verified successfully!'})
+    else:
+        return Response({'error': 'Link expired or invalid'}, status=status.HTTP_400_BAD_REQUEST)
 
 # --- 2. THE APPOINTMENT VIEW ---
 @csrf_exempt
