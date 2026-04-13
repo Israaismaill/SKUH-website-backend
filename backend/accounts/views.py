@@ -44,6 +44,44 @@ def create_appointment(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
+@api_view(['POST'])
+def create_doctor(request):
+    from .serializers import DoctorSerializer
+    serializer = DoctorSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def update_doctor(request, pk):
+    from .serializers import DoctorSerializer
+    try:
+        doctor = Doctor.objects.get(pk=pk)
+    except Doctor.DoesNotExist:
+        return Response({'error': 'Doctor not found'}, status=status.HTTP_404_NOT_FOUND)
+    serializer = DoctorSerializer(doctor, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def delete_doctor(request, pk):
+    try:
+        doctor = Doctor.objects.get(pk=pk)
+        doctor.delete()
+        return Response({'message': 'Deleted successfully'})
+    except Doctor.DoesNotExist:
+        return Response({'error': 'Doctor not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def get_appointments(request):
+    from .serializers import AppointmentSerializer
+    appointments = Appointment.objects.all()
+    serializer = AppointmentSerializer(appointments, many=True)
+    return Response(serializer.data)
+
 
 @api_view(['GET'])
 def get_doctors(request):
