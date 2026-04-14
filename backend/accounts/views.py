@@ -100,7 +100,43 @@ def create_appointment(request):
         return Response({"error": "Doctor not found in database"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
+@api_view(['POST'])
+def create_appointment_admin(request):
+    from .serializers import AppointmentSerializer
+    import random
+    data = request.data.copy()
+    if not data.get('reference_id'):
+        data['reference_id'] = 'SKH-' + str(random.randint(1000, 9999))
+    serializer = AppointmentSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def update_appointment(request, pk):
+    from .serializers import AppointmentSerializer
+    try:
+        appointment = Appointment.objects.get(pk=pk)
+    except Appointment.DoesNotExist:
+        return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+    serializer = AppointmentSerializer(appointment, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def delete_appointment(request, pk):
+    try:
+        appointment = Appointment.objects.get(pk=pk)
+        appointment.delete()
+        return Response({'message': 'Deleted'})
+    except Appointment.DoesNotExist:
+        return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+
 @api_view(['POST'])
 def create_doctor(request):
     from .serializers import DoctorSerializer
@@ -156,3 +192,32 @@ def get_news(request):
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
+
+@api_view(['POST'])
+def create_news(request):
+    serializer = NewsSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def update_news(request, pk):
+    try:
+        news = News.objects.get(pk=pk)
+    except News.DoesNotExist:
+        return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+    serializer = NewsSerializer(news, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def delete_news(request, pk):
+    try:
+        news = News.objects.get(pk=pk)
+        news.delete()
+        return Response({'message': 'Deleted successfully'})
+    except News.DoesNotExist:
+        return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)

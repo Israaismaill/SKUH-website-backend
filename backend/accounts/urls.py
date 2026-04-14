@@ -1,5 +1,12 @@
 from django.urls import path
-from .views import RegisterView, EmailTokenObtainPairView, create_appointment, get_doctors, get_news ,get_appointments, create_doctor, update_doctor, delete_doctor, verify_email
+from .views import (
+    RegisterView, EmailTokenObtainPairView,
+    create_appointment, update_appointment, delete_appointment,
+    get_appointments, create_appointment_admin,
+    get_doctors, create_doctor, update_doctor, delete_doctor,
+    get_news, create_news, update_news, delete_news,
+    verify_email
+)
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
@@ -15,5 +22,11 @@ urlpatterns = [
     path('doctors/<int:pk>/update/', update_doctor, name='update_doctor'),
     path('doctors/<int:pk>/delete/', delete_doctor, name='delete_doctor'),
     path('news/', get_news, name='get_news'),
+    path('news/create/', create_news, name='create_news'),
+    path('news/<int:pk>/update/', update_news, name='update_news'),
+    path('news/<int:pk>/delete/', delete_news, name='delete_news'),
     path('appointments/', get_appointments, name='get_appointments'),
+    path('appointments/create/admin/', create_appointment_admin, name='create_appointment_admin'),
+    path('appointments/<int:pk>/update/', update_appointment, name='update_appointment'),
+    path('appointments/<int:pk>/delete/', delete_appointment, name='delete_appointment'),
 ]

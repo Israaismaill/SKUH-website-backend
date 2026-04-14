@@ -53,7 +53,13 @@ class AppointmentAdmin(admin.ModelAdmin):
     list_display = ('reference_id', 'patient_name', 'doctor', 'appointment_date', 'status')
     list_filter = ('status', 'appointment_date', 'doctor')
     search_fields = ('reference_id', 'patient_name', 'patient_phone')
-    readonly_fields = ('reference_id', 'created_at') # Reference shouldn't be edited manually
+    readonly_fields = ('reference_id', 'created_at')
+
+    def save_model(self, request, obj, form, change):
+        import random
+        if not obj.reference_id:
+            obj.reference_id = 'SKH-' + str(random.randint(1000, 9999))
+        super().save_model(request, obj, form, change)
 
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):

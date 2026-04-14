@@ -47,6 +47,8 @@ class NewsSerializer(serializers.ModelSerializer):
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
+    doctor_name = serializers.CharField(source='doctor.name', read_only=True)
+    
     class Meta:
         model = Appointment
         fields = '__all__'
