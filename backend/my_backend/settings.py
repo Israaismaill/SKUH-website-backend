@@ -153,7 +153,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'israaismil48@gmail.com' 
 EMAIL_HOST_PASSWORD = 'puby qzek pvmb ezoc' 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
-FRONTEND_URL = 'https://sk-hospitalfinal.vercel.app/portal' 
+FRONTEND_URL = 'http://37.27.204.174/portal' 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
