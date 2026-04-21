@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from .models import User, Appointment, Doctor, News
-from .serializers import RegisterSerializer, EmailTokenObtainPairSerializer, NewsSerializer
+from .serializers import RegisterSerializer, EmailTokenObtainPairSerializer, NewsSerializer, UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
@@ -53,6 +53,11 @@ SKUH Hospital Team
             recipient_list=[user.email],
             fail_silently=False,
         )
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = UserSerializer
 
 @api_view(['GET'])
 def verify_email(request):

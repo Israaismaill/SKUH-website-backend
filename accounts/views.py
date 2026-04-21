@@ -1,6 +1,6 @@
 from rest_framework import generics
 from .models import User
-from .serializers import RegisterSerializer # This imports the file you just made!
+from .serializers import RegisterSerializer, UserSerializer # This imports the file you just made!
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -13,6 +13,11 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,) # Or set to IsAdminUser if you want to restrict it
+    serializer_class = UserSerializer
 @csrf_exempt
 @api_view(['POST'])
 def create_appointment(request):

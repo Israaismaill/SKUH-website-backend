@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    RegisterView, EmailTokenObtainPairView,
+    RegisterView, EmailTokenObtainPairView, UserListView,
     create_appointment, update_appointment, delete_appointment,
     get_appointments, create_appointment_admin,
     get_doctors, create_doctor, update_doctor, delete_doctor,
@@ -13,6 +13,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     # This makes the full URL: http://127.0.0.1:8000/api/register/
     path('register/', RegisterView.as_view(), name='register'),
+    path('users/', UserListView.as_view(), name='user-list'),
     path('verify-email/', verify_email, name='verify_email'),
     path('appointments/create/', create_appointment, name='create_appointment'),
     path('login/', EmailTokenObtainPairView.as_view(), name='login'),
